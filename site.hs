@@ -8,6 +8,7 @@ import Data.Time.Calendar.OrdinalDate
 import Data.Time.Clock
 import Data.Time.Format
 import Hakyll
+import Text.Pandoc.Options
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -23,7 +24,9 @@ main = hakyll $ do
   match "posts/*" $ do
     route $ setExtension "html"
     compile $
-      pandocCompiler
+      pandocCompilerWith
+        defaultHakyllReaderOptions
+        defaultHakyllWriterOptions{writerHTMLMathMethod = KaTeX ""}
         >>= loadAndApplyTemplate "templates/post.html" postCtx
         >>= loadAndApplyTemplate "templates/default.html" postCtx
         >>= relativizeUrls
