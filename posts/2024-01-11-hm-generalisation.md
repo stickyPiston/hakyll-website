@@ -47,7 +47,7 @@ $$
 \dfrac
   {\Gamma\vdash e_0:\tau_0,S_0\quad
     S_0\Gamma\cup\{x:\mathrm{Gen}(\Gamma,\tau_0)\}\vdash e_1:\tau_1,S_1}
-  {\Gamma\vdash\textbf{let } x=e_0\textbf{ in }e_1:\tau_1,S_0S_1}
+  {\Gamma\vdash\textbf{let } x=e_0\textbf{ in }e_1:\tau_1,S_1S_0}
   [\mathrm{Let}]
 $$
 
@@ -98,16 +98,17 @@ $$
 \begin{gather*}
 \dfrac
   {\begin{matrix}
-    \Gamma\vdash e_0:\tau_0,S_0\quad\ldots\quad\Gamma\vdash e_n:\tau_n,S_n\\
+    \Gamma\vdash e_0:\tau_0,S_0\quad\cdots\quad S_{n-1}\ldots S_0\Gamma\vdash e_n:\tau_n,S_n\\
     \tau=\mathrm{fresh}\quad
-    \tau\stackrel{U_0}\sim\tau_0\quad\ldots\quad\tau\stackrel{U_n}\sim\tau_n
+    \tau\stackrel{U_0}\sim\tau_0\quad\cdots\quad\tau\stackrel{U_n}\sim\tau_n
   \end{matrix}}
-  {\Gamma\vdash[e_0,\ldots,e_n]:\mathrm{List}[\tau],S_0\ldots S_nU_0\ldots U_n}
+  {\Gamma\vdash[e_0,\ldots,e_n]:\mathrm{List}[\tau],U_n\ldots U_0S_n\ldots S_0}
   [\mathrm{List}\text{-}\rm{lit}]\\
 \\
 \dfrac
-  {\Gamma\vdash e_0:\tau,S_0\quad S_0\Gamma\vdash e_1:\mathrm{List}[\tau],S_1}
-  {\Gamma\vdash e_0::e_1:\mathrm{List}[\tau],S_0S_1}
+  {\Gamma\vdash e_0:\tau_0,S_0\quad S_0\Gamma\vdash e_1:\mathrm{List}[\tau_1],S_1
+  \quad\tau_0\stackrel{U}\sim\tau_1}
+  {\Gamma\vdash e_0::e_1:\mathrm{List}[\tau_1],US_1S_0}
   [\mathrm{List}\text{-}\rm{cons}]
 \end{gather*}
 $$
@@ -166,7 +167,7 @@ $$
 \begin{gather*}
 \dfrac
   {\Gamma\vdash e_0:\tau_0,S_0\quad S_0\Gamma\cup\{x:\tau_0\}\vdash e_1:\tau_1,S_1}
-  {\Gamma\vdash\textbf{let }x=e_0\textbf{ in }e_1:\tau_1,S_0S_1}
+  {\Gamma\vdash\textbf{let }x=e_0\textbf{ in }e_1:\tau_1,S_1S_0}
   [\mathrm{Let}\text{-}\lnot\rm{Gen}]\\
 \\
 \dfrac
