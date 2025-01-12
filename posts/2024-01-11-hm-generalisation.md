@@ -33,21 +33,21 @@ formally, we define generalisation using the following function:
 
 $$
 \begin{gather*}
-\rm{Gen}:\Gamma\times \tau\to\sigma\\
-\rm{Gen}=(\Gamma,\tau)\mapsto \forall(\rm{ftv}(\tau)\setminus\rm{ftv}(\Gamma)).\tau
+\mathrm{Gen}:\Gamma\times \tau\to\sigma\\
+\mathrm{Gen}=(\Gamma,\tau)\mapsto \forall(\rm{ftv}(\tau)\setminus\rm{ftv}(\Gamma)).\tau
 \end{gather*}
 $$
 
 where $\tau$ is the set of types, and $\sigma$ the set of type schemes, and
-$\rm{ftv}(x)$ denotes the set of free type variables in $x$. With that
+$\mathrm{ftv}(x)$ denotes the set of free type variables in $x$. With that
 definition in mind, we can define type inference for let-in expressions as follows:
 
 $$
 \dfrac
   {\Gamma\vdash e_0:\tau_0,S_0\quad
-    S_0\Gamma\cup\{x:\rm{Gen}(\Gamma,\tau_0)\}\vdash e_1:\tau_1,S_1}
+    S_0\Gamma\cup\{x:\mathrm{Gen}(\Gamma,\tau_0)\}\vdash e_1:\tau_1,S_1}
   {\Gamma\vdash\textbf{let } x=e_0\textbf{ in }e_1:\tau_1,S_0S_1}
-  [\rm{Let}]
+  [\mathrm{Let}]
 $$
 
 Instantiation isn't difficult either: we take a type scheme, and consistently replace
@@ -57,21 +57,21 @@ as follows:
 
 $$
 \begin{gather*}
-\rm{inst}:\sigma\to\tau\\
-\rm{inst}=(\forall\alpha_1,\ldots,\alpha_n.\tau)\mapsto \tau[\alpha_1:=\rm{fresh},
-\ldots,\alpha_n:=\rm{fresh}]
+\mathrm{inst}:\sigma\to\tau\\
+\mathrm{inst}=(\forall\alpha_1,\ldots,\alpha_n.\tau)\mapsto \tau[\alpha_1:=\rm{fresh},
+\ldots,\alpha_n:=\mathrm{fresh}]
 \end{gather*}
 $$
 
-where $\rm{fresh}$ denotes a fresh type variable that is free in $\tau$. Inferring
+where $\mathrm{fresh}$ denotes a fresh type variable that is free in $\tau$. Inferring
 the type of a variable is now as simple as looking up the type scheme in the
 environment, and instantiating the found type scheme.
 
 $$
 \dfrac
   {x:\sigma\in\Gamma}
-  {\Gamma\vdash x:\rm{inst}(\sigma),\emptyset}
-  [\rm{Var}]
+  {\Gamma\vdash x:\mathrm{inst}(\sigma),\emptyset}
+  [\mathrm{Var}]
 $$
 
 ## To generalise?
@@ -79,12 +79,12 @@ $$
 Let-polymorphism is a very useful concept in the Hindley-Milner calculus,
 since it's the only way to define polymorphic functions and values. That means a
 term like the following will be accepted by Hindley-Milner, because $f$ has the
-inferred type $\alpha\to\alpha$, and running that through $\rm{Gen}$ gives the
+inferred type $\alpha\to\alpha$, and running that through $\mathrm{Gen}$ gives the
 type scheme $\forall\alpha.\alpha\to\alpha$.
 
 $$
-\textbf{let }f=\lambda x.x\textbf{ in }(f\ 10, f\ \rm{True})
-:\rm{Int}\times\rm{Bool}
+\textbf{let }f=\lambda x.x\textbf{ in }(f\ 10, f\ \mathrm{True})
+:\mathrm{Int}\times\rm{Bool}
 $$
 
 Now let's look at a more complex example: let's add some rules for lists.
@@ -98,32 +98,33 @@ $$
 \dfrac
   {\begin{matrix}
     \Gamma\vdash e_0:\tau_0,S_0\quad\ldots\quad\Gamma\vdash e_n:\tau_n,S_n\\
-    \tau=\rm{fresh}\quad
+    \tau=\mathrm{fresh}\quad
     \tau\stackrel{U_0}\sim\tau_0\quad\ldots\quad\tau\stackrel{U_n}\sim\tau_n
   \end{matrix}}
-  {\Gamma\vdash[e_0,\ldots,e_n]:\rm{List}[\tau],S_0\ldots S_nU_0\ldots U_n}
-  [\rm{List}\text{-}\rm{lit}]\\
+  {\Gamma\vdash[e_0,\ldots,e_n]:\mathrm{List}[\tau],S_0\ldots S_nU_0\ldots U_n}
+  [\mathrm{List}\text{-}\rm{lit}]\\
 \\
 \dfrac
-  {\Gamma\vdash e_0:\tau,S_0\quad S_0\Gamma\vdash e_1:\rm{List}[\tau],S_1}
-  {\Gamma\vdash e_0::e_1:\rm{List}[\tau],S_0S_1}
-  [\rm{List}\text{-}\rm{cons}]
+  {\Gamma\vdash e_0:\tau,S_0\quad S_0\Gamma\vdash e_1:\mathrm{List}[\tau],S_1}
+  {\Gamma\vdash e_0::e_1:\mathrm{List}[\tau],S_0S_1}
+  [\mathrm{List}\text{-}\rm{cons}]
 \end{gather*}
 $$
 
 Now using these new concepts, we can infer and check the type of the following
-program. Note that we abuse the let-polymorphism here, since $[]:\rm{List}[\alpha]$
-and, therefore according to the $[\rm{Let}]$ rule, $x:\forall\alpha.\rm{List}[\alpha]$
-is added to the environment. And with the $[\rm{Var}]$ rule, we can instantiate $x$
-as both a $\rm{List}[\rm{Int}]$ and a $\rm{List}[\rm{Bool}]$ in the same body.
+program. Note that we abuse the let-polymorphism here, since $[]:\mathrm{List}[\alpha]$
+and, therefore according to the $[\mathrm{Let}]$ rule, $x:\forall\alpha.\rm{List}[\alpha]$
+is added to the environment. And with the $[\mathrm{Var}]$ rule, we can
+instantiate $x$ as both a $\mathrm{List}[\rm{Int}]$ and a $\rm{List}[\rm{Bool}]$
+in the same body.
 
 $$
-\textbf{let }x=[]\textbf{ in }(10::x,\rm{True} :: x)
-:\rm{List}[\rm{Int}]\times\rm{List}[\rm{Bool}]
+\textbf{let }x=[]\textbf{ in }(10::x,\mathrm{True} :: x)
+:\mathrm{List}[\rm{Int}]\times\rm{List}[\rm{Bool}]
 $$
 
-As we've seen with functions, the generalisation in the $[\rm{Let}]$ rule and
-the instantiation in the $[\rm{Var}]$ rule are hard at work to handle the
+As we've seen with functions, the generalisation in the $[\mathrm{Let}]$ rule and
+the instantiation in the $[\mathrm{Var}]$ rule are hard at work to handle the
 polymorphic list. As mentioned before, in the Hindley-Milner calculus,
 variables cannot be assigned to after they are defined. But in the case of
 imperative or object-oriented languages, reassignment should be allowed,
@@ -147,11 +148,12 @@ End
 ```
 
 `result` is a definition we have seen before, so we can quickly conclude that
-$\text{result}:\forall\alpha.\rm{List}[\alpha]$. Now the use of `result` in the for
-loop causes it to get instantiated and become a value of type $\rm{List}[\beta]$,
-and similarly, the use in the return statement also gets instantiated to a value
-of type $\rm{List}[\gamma]$. So the type of `map` is inferred as
-$\forall\alpha,\beta,\gamma.(\alpha\to\beta)\times\rm{List}[\alpha]\to\rm{List}[\gamma]$.
+$\text{result}:\forall\alpha.\mathrm{List}[\alpha]$. Now the use of `result` in the
+for loop causes it to get instantiated and become a value of type
+$\mathrm{List}[\beta]$, and similarly, the use in the return statement also
+gets instantiated to a value of type $\mathrm{List}[\gamma]$. So the type of `map`
+is inferred as $\forall\alpha,\beta,\gamma.(\alpha\to\beta)
+\times\mathrm{List}[\alpha]\to\rm{List}[\gamma]$.
 This isn't really the expected type for `map`, so what goes wrong here? Well, the
 generalisation of `result` causes the value in the return statement to be instantiated
 with a type independent of other uses of `result`. Since we reassign
@@ -164,12 +166,12 @@ $$
 \dfrac
   {\Gamma\vdash e_0:\tau_0,S_0\quad S_0\Gamma\cup\{x:\tau_0\}\vdash e_1:\tau_1,S_1}
   {\Gamma\vdash\textbf{let }x=e_0\textbf{ in }e_1:\tau_1,S_0S_1}
-  [\rm{Let}\text{-}\lnot\rm{Gen}]\\
+  [\mathrm{Let}\text{-}\lnot\rm{Gen}]\\
 \\
 \dfrac
   {x:\tau\in\Gamma}
   {\Gamma\vdash x:\tau,\emptyset}
-  [\rm{Var}\text{-}\lnot\rm{inst}]
+  [\mathrm{Var}\text{-}\lnot\rm{inst}]
 \end{gather*}
 $$
 
