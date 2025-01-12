@@ -1,4 +1,4 @@
-name: Build
+name: Build and deploy
 
 on:
   push:
@@ -11,16 +11,13 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-haskell@v1
       with:
         ghc-version: '9.10.1'
         cabal-version: '3.12.1.0'
-
     - name: Cache
       uses: actions/cache@v3
       env:
@@ -32,7 +29,6 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-
     - name: Install dependencies
       run: |
         cabal update
@@ -41,7 +37,16 @@ jobs:
       run: cabal build
     - name: Build static website
       run: cabal exec site build
-    - uses: actions/upload-artifact@v4
-      with:
-        name: build
-        path: _site
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
