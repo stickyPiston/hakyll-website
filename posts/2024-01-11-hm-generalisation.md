@@ -1,5 +1,6 @@
 ---
 title: To generalise or not to generalise your types?
+description: Let-polymorphism is an essential mechanism for the Hindley-Milner calculus, but do we want to apply let-polymorphism to all let bindings in an imperative language?
 ---
 
 I am working on a simple object-oriented programming language

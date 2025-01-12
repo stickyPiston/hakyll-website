@@ -1,5 +1,6 @@
 ---
 title: job's online place
+description: Job's personal website, showcasing some of my programming projects, and listing some of my little articles.
 ---
 
 Hi, I'm Job! I'm a computer science student from the Netherlands,
@@ -28,7 +29,9 @@ Just to give you an idea on what they're about, here's the latest few posts:
 
 $for(posts)$
 
-- [$title$]($url$) posted on $date$
+- [$title$]($url$) posted on $date$.
+
+  _$description$_
 
 $endfor$
 
