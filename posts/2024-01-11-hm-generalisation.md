@@ -34,7 +34,7 @@ formally, we define generalisation using the following function:
 $$
 \begin{gather*}
 \rm{Gen}:\Gamma\times \tau\to\sigma\\
-\rm{Gen}=(\Gamma, \tau)\mapsto \forall(\rm{ftv}(\tau)\setminus\rm{ftv}(\Gamma)).\tau
+\rm{Gen}=(\Gamma,\tau)\mapsto \forall(\rm{ftv}(\tau)\setminus\rm{ftv}(\Gamma)).\tau
 \end{gather*}
 $$
 
@@ -44,9 +44,9 @@ definition in mind, we can define type inference for let-in expressions as follo
 
 $$
 \dfrac
-  {S_0\Gamma\vdash e_0:\tau_0\quad
-    S_1(S_0\Gamma\cup\{x:\rm{Gen}(S_0\Gamma, \tau_0\})\vdash e_1:\tau_1}
-  {S_0S_1\Gamma\vdash\textbf{let } x=e_0\textbf{ in }e_1:\tau_1}
+  {\Gamma\vdash e_0:\tau_0,S_0\quad
+    S_0\Gamma\cup\{x:\rm{Gen}(\Gamma,\tau_0)\}\vdash e_1:\tau_1,S_1}
+  {\Gamma\vdash\textbf{let } x=e_0\textbf{ in }e_1:\tau_1,S_0S_1}
   [\rm{Let}]
 $$
 
@@ -70,7 +70,7 @@ environment, and instantiating the found type scheme.
 $$
 \dfrac
   {x:\sigma\in\Gamma}
-  {\emptyset\Gamma\vdash x:\rm{inst}(\sigma)}
+  {\Gamma\vdash x:\rm{inst}(\sigma),\emptyset}
   [\rm{Var}]
 $$
 
@@ -96,14 +96,17 @@ an element to a list.
 $$
 \begin{gather*}
 \dfrac
-  {S_0\Gamma\vdash e_0:\tau_0,\ldots,S_n\Gamma\vdash e_n:\tau_n,\quad
-    \tau\stackrel{U_0}\sim\tau_0,\ldots,\tau\stackrel{U_n}\sim\tau_n}
-  {S_0\ldots S_nU_0\ldots U_n\Gamma\vdash[e_0,\ldots,e_n]:\rm{List}[\tau]}
+  {\begin{matrix}
+    \Gamma\vdash e_0:\tau_0,S_0\quad\ldots\quad\Gamma\vdash e_n:\tau_n,S_n\\
+    \tau=\rm{fresh}\quad
+    \tau\stackrel{U_0}\sim\tau_0\quad\ldots\quad\tau\stackrel{U_n}\sim\tau_n
+  \end{matrix}}
+  {\Gamma\vdash[e_0,\ldots,e_n]:\rm{List}[\tau],S_0\ldots S_nU_0\ldots U_n}
   [\rm{List}\text{-}\rm{lit}]\\
 \\
 \dfrac
-  {S_0\Gamma\vdash e_0:\tau\quad S_1(S_0\Gamma)\vdash e_1:\rm{List}[\tau]}
-  {S_0S_1\Gamma\vdash e_0::e_1:\rm{List}[\tau]}
+  {\Gamma\vdash e_0:\tau,S_0\quad S_0\Gamma\vdash e_1:\rm{List}[\tau],S_1}
+  {\Gamma\vdash e_0::e_1:\rm{List}[\tau],S_0S_1}
   [\rm{List}\text{-}\rm{cons}]
 \end{gather*}
 $$
@@ -159,13 +162,13 @@ we need to disable generalisation in let statements.
 $$
 \begin{gather*}
 \dfrac
-  {S_0\Gamma\vdash e_0:\tau_0\quad S_1(S_0\Gamma\cup\{x:\tau_0\})\vdash e_1:\tau_1}
-  {S_0S_1\Gamma\vdash\textbf{let }x=e_0\textbf{ in }e_1:\tau_1}
+  {\Gamma\vdash e_0:\tau_0,S_0\quad S_0\Gamma\cup\{x:\tau_0\}\vdash e_1:\tau_1,S_1}
+  {\Gamma\vdash\textbf{let }x=e_0\textbf{ in }e_1:\tau_1,S_0S_1}
   [\rm{Let}\text{-}\lnot\rm{Gen}]\\
 \\
 \dfrac
   {x:\tau\in\Gamma}
-  {\emptyset\Gamma\vdash x:\tau}
+  {\Gamma\vdash x:\tau,\emptyset}
   [\rm{Var}\text{-}\lnot\rm{inst}]
 \end{gather*}
 $$
