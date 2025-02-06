@@ -47,11 +47,7 @@ main = hakyll $ do
         -- it through the year template
         forM groupedPosts $ \group ->
           let (year : _, posts) = unzip group
-              yearCtx =
-                defaultContext
-                  <> constField "year" (show year)
-                  <> listField "posts" postCtx (return posts)
-           in makeItem "" >>= loadAndApplyTemplate "templates/postyear.html" yearCtx
+           in makeItem "" >>= loadAndApplyTemplate "templates/postyear.html" (yearCtx year posts)
 
   match "pages/index.md" $
     compileMarkdownPage $
@@ -75,4 +71,10 @@ compileMarkdownPage ctx = do
 postCtx :: Context String
 postCtx =
   dateField "date" "%B %e, %Y"
+    <> defaultContext
+
+yearCtx :: Integer -> [Item String] -> Context String
+yearCtx year posts =
+  constField "year" (show year)
+    <> listField "posts" postCtx (return posts)
     <> defaultContext
